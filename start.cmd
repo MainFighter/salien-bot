@@ -2,7 +2,7 @@
 
 :: Made by Main Fighter [mainfighter.com]
 :: Simple start script for meepen's sailen-bot [https://github.com/meepen/salien-bot]
-:: v1.7.0 [24-06-2018]
+:: v1.7.1 [24-06-2018]
 
 ::===============================================================================================================::
 
@@ -30,10 +30,6 @@ set rootdir=%~dp0
 
 :: Clone botfiles
 if %autodownloadbot%==true (
-    cls
-    title Downloading bot files
-    echo Downloading bot files
-    echo.
     cd %rootdir%
     call :DownloadBotFiles
     if %debug%==true pause
@@ -41,18 +37,21 @@ if %autodownloadbot%==true (
 
 :: Update botfiles
 if %autoupdatebot%==true (
-    cls
-    title Updating bot files
-    echo Updating bot files
-    echo.
     cd %rootdir%
     call :UpdateBotFiles
     if %debug%==true pause
 )
 
+:: npm install
+if %npminstall%==true (
+    cd %rootdir%
+    call :npmInstall
+    if %debug%==true pause
+)
+
 :: Sets up token for all bots
 cls
-title Setting up bot tokens
+title Bot Token Setup
 echo Setting up bot tokens
 echo.
 cd %rootdir%
@@ -61,7 +60,7 @@ if %debug%==true pause
 
 :: Start all bots in config
 cls
-title Starting bots
+title Bot Start
 echo Starting bots
 echo.
 cd %rootdir%
@@ -78,11 +77,12 @@ exit
 
 :DownloadBotFiles
 
-title Downloading bot files
+title Bot File Download
+cls
+echo Downloading bot files
 echo.
-echo Downloading bot Files
 
-:: Checks if bot files don't already exist > if they don't creates folder > if they don't clones bot to directory
+:: Checks to make sure botfiles doesn't already exist > if it doesn't it clones the bot files to the botfiles directory
 if not exist botfiles ( git clone --quiet https://github.com/meepen/salien-bot.git botfiles ) else ( echo Bot files already exist )
 
 goto :eof
@@ -91,12 +91,26 @@ goto :eof
 
 :UpdateBotFiles
 
-title Updating bot files
-echo.
+title Update Bot Files
+cls
 echo Updating bot files
+echo.
 
-:: Checks if bot directory exists > if it does change to bot directory > if exists git pull to update
+:: Checks if botfiles exists > if it does then update botfiles using git and run npm install
 if exist botfiles ( cd botfiles & git pull --quiet ) else ( echo Bot files don't exist )
+
+goto :eof
+
+::===============================================================================================================::
+
+:npmInstall
+
+title Run npm install
+cls
+echo Running npm install
+echo.
+
+if exist botfiles ( cd botfiles & call npm install ) else ( echo Bot files don't exist )
 
 goto :eof
 
@@ -107,9 +121,8 @@ goto :eof
 :: Probably not the best way to do it but it works
 if %enabled%==false goto :eof
 
-title Setting up token
 echo.
-echo Setting up token
+echo %name% - Setting up token
 
 :: Checks
 if not exist "botfiles\%name%.json" if not defined gettoken echo %name% Token not in instance config & goto :eof
@@ -126,7 +139,6 @@ goto :eof
 :: Probably not the best way to do it but it works
 if %enabled%==false goto :eof
 
-title %name% - Starting Bot
 echo.
 echo %name% - Starting bot
 
@@ -134,7 +146,7 @@ echo %name% - Starting bot
 if not exist "botfiles\%name%.json" ( echo %name% - Token is missing bot not starting & pause & goto :eof )
 
 :: Opens CMD Window > Sets title and color of window > Changes to dir > runs npm install if enabled > starts bot
-set commandline="title Sailen Bot - %name% & color %color% & cd botfiles & if %npminstall%==true call npm install & node headless --token %name%.json %botargs% & if %debug%==true pause & exit"
+set commandline="title Sailen Bot - %name% & color %color% & cd botfiles & node headless --token %name%.json %botargs% & if %debug%==true pause & exit"
 if %minimized%==true (start /min cmd /k  %commandline%) else (start cmd /k %commandline%)
 
 goto :eof

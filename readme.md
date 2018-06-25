@@ -1,5 +1,7 @@
 # Start script for meepen's sailen-bot
 
+###### Make sure you delete botfiles directory if you are updating to 1.7.0. Uses one set of bot files with --token arg now.
+
 ## How to use
 
 - Download and install https://nodejs.org/ - Need for bot
