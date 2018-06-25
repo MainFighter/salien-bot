@@ -2,7 +2,7 @@
 
 :: Made by Main Fighter [mainfighter.com]
 :: Simple start script for meepen's sailen-bot [https://github.com/meepen/salien-bot]
-:: v1.6.4 [24-06-2018]
+:: v1.7.0 [24-06-2018]
 
 ::===============================================================================================================::
 
@@ -34,7 +34,8 @@ if %autodownloadbot%==true (
     title Downloading bot files
     echo Downloading bot files
     echo.
-    for %%a in ("instances\*.cmd") do call :SetDefaults & cd %rootdir% & call "%%a" & call :DownloadBotFiles
+    cd %rootdir%
+    call :DownloadBotFiles
     if %debug%==true pause
 )
 
@@ -44,7 +45,8 @@ if %autoupdatebot%==true (
     title Updating bot files
     echo Updating bot files
     echo.
-    for %%a in ("instances\*.cmd") do call :SetDefaults & cd %rootdir% & call "%%a" & call :UpdateBotFiles
+    cd %rootdir%
+    call :UpdateBotFiles
     if %debug%==true pause
 )
 
@@ -53,7 +55,8 @@ cls
 title Setting up bot tokens
 echo Setting up bot tokens
 echo.
-for %%a in ("instances\*.cmd") do call :SetDefaults & cd %rootdir% & call "%%a" & call :SetupToken
+cd %rootdir%
+for %%f in ("instances\*.cmd") do call :SetDefaults & cd %rootdir% & call "%%f" & call :SetupToken
 if %debug%==true pause
 
 :: Start all bots in config
@@ -61,7 +64,8 @@ cls
 title Starting bots
 echo Starting bots
 echo.
-for %%a in ("instances\*.cmd") do call :SetDefaults & cd %rootdir% & call "%%a" & call :StartScript
+cd %rootdir%
+for %%f in ("instances\*.cmd") do call :SetDefaults & cd %rootdir% & call "%%f" & call :StartScript
 if %debug%==true pause
 
 ::===============================================================================================================::
@@ -74,17 +78,12 @@ exit
 
 :DownloadBotFiles
 
-:: Probably not the best way to do it but it works
-if %enabled%==false goto :eof
-
+title Downloading bot files
 echo.
-echo %name% - Downloading Bot Files
-
-:: Sets directory to be the same as name if not defined
-if not defined directory set directory=%name%
+echo Downloading bot Files
 
 :: Checks if bot files don't already exist > if they don't creates folder > if they don't clones bot to directory
-if not exist botfiles\%directory% ( mkdir botfiles\%directory% & git clone --quiet https://github.com/meepen/salien-bot.git botfiles\%directory% & echo %name% - Bot files downloaded ) else ( echo %name% - Bot files already exist )
+if not exist botfiles ( git clone --quiet https://github.com/meepen/salien-bot.git botfiles ) else ( echo Bot files already exist )
 
 goto :eof
 
@@ -92,18 +91,12 @@ goto :eof
 
 :UpdateBotFiles
 
-:: Probably not the best way to do it but it works
-if %enabled%==false goto :eof
-
-title %name% - Updating bot files
+title Updating bot files
 echo.
-echo %name% - Updating bot files
-
-:: Sets directory to be the same as name if not defined
-if not defined directory set directory=%name%
+echo Updating bot files
 
 :: Checks if bot directory exists > if it does change to bot directory > if exists git pull to update
-if exist botfiles\%directory% ( cd botfiles\%directory% & git pull --quiet & echo %name% - Bot files updated ) else ( echo %name% - Bot files don't exist )
+if exist botfiles ( cd botfiles & git pull --quiet ) else ( echo Bot files don't exist )
 
 goto :eof
 
@@ -114,18 +107,15 @@ goto :eof
 :: Probably not the best way to do it but it works
 if %enabled%==false goto :eof
 
-title %name% - Setting up token
+title Setting up token
 echo.
-echo %name% - Setting up token
-
-:: Sets directory to be the same as name if not defined
-if not defined directory set directory=%name%
+echo Setting up token
 
 :: Checks
-if not exist "botfiles\%directory%\gettoken.json" if not defined gettoken echo %name% Token not in instance config & goto :eof
+if not exist "botfiles\%name%.json" if not defined gettoken echo %name% Token not in instance config & goto :eof
 
 :: Checks if gettoken.json exists > if it doesn't write the token from the instance config file
-if not exist "botfiles\%directory%\gettoken.json" ( echo %gettoken% >> botfiles\%directory%\gettoken.json & echo %name% - Token setup ) else ( echo %name% - Token already setup )
+if not exist "botfiles\%name%.json" ( echo %gettoken% >> botfiles\%name%.json & echo %name% - Token setup ) else ( echo %name% - Token already setup )
 
 goto :eof
 
@@ -140,14 +130,11 @@ title %name% - Starting Bot
 echo.
 echo %name% - Starting bot
 
-:: Sets directory to be the same as name if not defined
-if not defined directory set directory=%name%
-
 :: Checks
-if not exist "botfiles\%directory%\gettoken.json" ( echo %name% - Token is missing bot not starting & pause & goto :eof )
+if not exist "botfiles\%name%.json" ( echo %name% - Token is missing bot not starting & pause & goto :eof )
 
 :: Opens CMD Window > Sets title and color of window > Changes to dir > runs npm install if enabled > starts bot
-set commandline="title Sailen Bot - %name% & color %color% & cd botfiles\%directory% & if %npminstall%==true call npm install & node headless %botargs% & if %debug%==true pause & exit"
+set commandline="title Sailen Bot - %name% & color %color% & cd botfiles & if %npminstall%==true call npm install & node headless --token %name%.json %botargs% & if %debug%==true pause & exit"
 if %minimized%==true (start /min cmd /k  %commandline%) else (start cmd /k %commandline%)
 
 goto :eof
@@ -162,7 +149,6 @@ set gettoken=
 set botargs=
 set minimized=false
 set name=untitled
-set directory=
 set color=0C
 
 goto :eof
