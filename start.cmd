@@ -52,19 +52,19 @@ if %npminstall%==true (
 :: Sets up token for all bots
 cls
 title Bot Token Setup
-echo Setting up bot tokens
 echo.
+echo Setting up bot tokens
 cd %rootdir%
-for %%f in ("instances\*.cmd") do call :SetDefaults & cd %rootdir% & call "%%f" & call :SetupToken
+for %%a in ("instances\*.cmd") do call :SetDefaults & cd %rootdir% & call "%%a" & call :SetupToken
 if %debug%==true pause
 
 :: Start all bots in config
 cls
 title Bot Start
-echo Starting bots
 echo.
+echo Starting bots
 cd %rootdir%
-for %%f in ("instances\*.cmd") do call :SetDefaults & cd %rootdir% & call "%%f" & call :StartScript
+for %%a in ("instances\*.cmd") do call :SetDefaults & cd %rootdir% & call "%%a" & call :StartScript
 if %debug%==true pause
 
 ::===============================================================================================================::
@@ -79,6 +79,7 @@ exit
 
 title Bot File Download
 cls
+echo.
 echo Downloading bot files
 echo.
 
@@ -93,6 +94,7 @@ goto :eof
 
 title Update Bot Files
 cls
+echo.
 echo Updating bot files
 echo.
 
@@ -107,9 +109,11 @@ goto :eof
 
 title Run npm install
 cls
+echo.
 echo Running npm install
 echo.
 
+:: Checks if botfiles exists > if exists change to directory and run npm install
 if exist botfiles ( cd botfiles & call npm install ) else ( echo Bot files don't exist )
 
 goto :eof
@@ -145,7 +149,7 @@ echo %name% - Starting bot
 :: Checks
 if not exist "botfiles\%name%.json" ( echo %name% - Token is missing bot not starting & pause & goto :eof )
 
-:: Opens CMD Window > Sets title and color of window > Changes to dir > runs npm install if enabled > starts bot
+:: Opens CMD Window > Sets title and color of window > Changes to dir > starts bot
 set commandline="title Sailen Bot - %name% & color %color% & cd botfiles & node headless --token %name%.json %botargs% & if %debug%==true pause & exit"
 if %minimized%==true (start /min cmd /k  %commandline%) else (start cmd /k %commandline%)
 
