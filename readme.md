@@ -5,7 +5,7 @@
 - Download and install https://nodejs.org/ - Need for bot
 - Download and install https://git-scm.com/ - Needed for auto download/update
 - Download https://github.com/MainFighter/salien-bot/archive/winstartscript.zip and extract somewhere
-- Create a config in instances folder using the exampleinstance.cmd as a starting point
+- Create a config in instances folder, everything is explained in exampleinstance.cmd
 - Run start.cmd
 The bot/s should be running now!
 
