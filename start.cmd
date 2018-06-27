@@ -2,7 +2,7 @@
 
 :: Made by Main Fighter [mainfighter.com]
 :: Simple start script for meepen's sailen-bot [https://github.com/meepen/salien-bot]
-:: v1.7.2 [24-06-2018]
+:: v1.7.3 [24-06-2018]
 
 ::===============================================================================================================::
 
@@ -11,7 +11,7 @@
 call configuration.cmd 
 @echo %echo%
 
-title "Start script for meepen's sailens-bot"
+title Start script for meepen's sailens-bot
 color %cmdcolor%
 
 :: Checks
@@ -30,7 +30,7 @@ set rootdir=%~dp0
 :: Clone botfiles
 if %autodownloadbot%==true (
     color %cmdcolor%
-    title Bot File Download
+    title Start Script for meepen's sailens-bot - Download Files
     echo.
     echo Downloading bot files
     echo.
@@ -58,7 +58,7 @@ if not exist "%botdirectory%" (
 :: Update botfiles
 if %autoupdatebot%==true (
     color %cmdcolor%
-    title Update Bot Files
+    title Start Script for meepen's sailens-bot - Update Files
     echo.
     echo Updating bot files
     echo.
@@ -71,7 +71,7 @@ if %autoupdatebot%==true (
 :: npm install
 if %npminstall%==true (
     color %cmdcolor%
-    title Run npm install
+    title Start Script for meepen's sailens-bot - NPM Install
     echo.
     echo Running npm install
     echo.
@@ -83,21 +83,25 @@ if %npminstall%==true (
 
 :: Sets up token for all bots
 color %cmdcolor%
-title Bot Token Setup
+title Start Script for meepen's sailens-bot - Token Setup
 echo.
 echo Setting up bot tokens
 cd "%rootdir%"
 for %%a in ("instances\*.cmd") do call :SetDefaults & cd "%rootdir%" & call "%%a" & call :SetupToken
+echo.
+echo All bot tokens setup
 if %debug%==true pause
 cls
 
 :: Start all bots in config
 color %cmdcolor%
-title Bot Start
+title Start Script for meepen's sailens-bot - Start Bots
 echo.
 echo Starting bots
 cd "%rootdir%"
 for %%a in ("instances\*.cmd") do call :SetDefaults & cd "%rootdir%" & call "%%a" & call :StartScript
+echo.
+echo All bots started
 if %debug%==true pause
 cls
 
@@ -112,7 +116,7 @@ exit
 :DownloadBotFiles
 
 :: Checks to make sure botfiles doesn't already exist > if it doesn't it clones the bot files to the botfiles directory
-if not exist "%botdirectory%" ( git clone --quiet https://github.com/meepen/salien-bot.git "%botdirectory%" ) else ( echo Bot files already exist )
+if not exist "%botdirectory%" ( git clone --quiet https://github.com/meepen/salien-bot.git "%botdirectory%" & echo Bot files downloaded ) else ( echo Bot files already exist )
 
 goto :eof
 
@@ -120,8 +124,8 @@ goto :eof
 
 :UpdateBotFiles
 
-:: Checks if botfiles exists > if it does then update botfiles using git and run npm install
-if exist "%botdirectory%" ( cd "%botdirectory%" & git pull --quiet ) else ( echo Bot files don't exist )
+:: Checks if botfiles exists > if it does then update botfiles using git
+if exist "%botdirectory%" ( cd "%botdirectory%" & git pull --quiet & echo Bot files updated ) else ( echo Bot files don't exist )
 
 goto :eof
 
@@ -130,7 +134,7 @@ goto :eof
 :npmInstall
 
 :: Checks if botfiles exists > if exists change to directory and run npm install
-if exist "%botdirectory%" ( cd "%botdirectory%" & call npm install & @echo %echo% ) else ( echo Bot files don't exist )
+if exist "%botdirectory%" ( cd "%botdirectory%" & call npm install & @echo %echo% & echo NPM install finished ) else ( echo Bot files don't exist )
 
 goto :eof
 
@@ -149,8 +153,9 @@ echo %name% - Setting up token
 :: Checks
 if not exist "tokens\%name%.json" if not defined gettoken ( echo %name% - Token file not found and token not set in instance config & goto :eof )
 
-:: Checks if gettoken.json exists > if it doesn't write the token from the instance config file
+:: Creates tokens directory if it doesn't exist
 if not exist "tokens" ( mkdir "tokens" )
+:: Checks if gettoken.json exists for instance > if it doesn't write the token from the instance config file
 if not exist "tokens\%name%.json" ( echo %gettoken% >> "tokens\%name%.json" & echo %name% - Token setup ) else ( echo %name% - Token already setup )
 
 goto :eof
