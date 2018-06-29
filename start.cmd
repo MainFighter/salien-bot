@@ -2,7 +2,7 @@
 
 :: Made by Main Fighter [mainfighter.com]
 :: Simple start script for meepen's sailen-bot [https://github.com/meepen/salien-bot]
-:: v1.7.3 [24-06-2018]
+:: v1.7.4 [24-06-2018]
 
 ::===============================================================================================================::
 
@@ -26,6 +26,19 @@ if %autodownloadbot%==true if %autoupdatebot%==true if %errorlevel%==9009 ( set 
 
 :: Sets rootdir var to the currently directory of script
 set rootdir=%~dp0
+
+:: Kill running bots
+if %killrunning%==true (
+    color %cmdcolor%
+    title Start Script for meepen's sailens-bot - Kill Running Bots
+    echo.
+    echo Killing running bots
+    echo.
+    cd "%rootdir%"
+    call :KillRunning
+    if %debug%==true pause
+    cls 
+)
 
 :: Clone botfiles
 if %autodownloadbot%==true (
@@ -110,6 +123,16 @@ cls
 :Farewell
 
 exit
+
+::===============================================================================================================::
+
+:KillRunning
+
+:: Should only kill Sailen Bot instances
+:: Might improve later, only really adding it for myself
+taskkill /f /im cmd.exe /fi "WINDOWTITLE eq Sailen Bot*" & taskkill /f /im node.exe /fi "WINDOWTITLE eq Sailen Bot*" & echo Bots killed
+
+goto :eof
 
 ::===============================================================================================================::
 

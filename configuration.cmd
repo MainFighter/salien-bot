@@ -1,5 +1,8 @@
 :: Global Configuration
 
+:: Kill running bots
+set killrunning=false
+
 :: Directory the bot files are stored in
 set botdirectory=botfiles
 
